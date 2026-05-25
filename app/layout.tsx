@@ -15,10 +15,6 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Trio",
   description: "Tu plataforma de streaming favorita",
-  icons: {
-    icon: "/image.png",
-    apple: "/image.png",
-  },
   openGraph: {
     title: "Trio – Tu plataforma de streaming",
     description: "Descubre y disfruta tus películas favoritas en Trio.",
