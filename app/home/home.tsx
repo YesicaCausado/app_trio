@@ -921,12 +921,10 @@ export default function HomePage() {
 
       {/* ── Top Bar ── */}
       <div
+        className="top-bar"
         style={{
           background: "#cc0000",
           padding: "6px 12px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
         }}
       >
         <div
@@ -944,7 +942,7 @@ export default function HomePage() {
           NETFLIX
         </div>
 
-        <div style={{ display: "flex", gap: 8, alignItems: "center", color: "#fff", fontSize: 12 }}>
+        <div className="top-bar-links" style={{ color: "#fff", fontSize: 12 }}>
           <span style={{ cursor: "default", opacity: 0.95 }}>
             {loadingUser ? "Cargando usuario..." : `Bienvenido, ${displayName}`}
           </span>
@@ -962,12 +960,10 @@ export default function HomePage() {
 
       {/* ── Primary Nav ── */}
       <div
+        className="primary-nav"
         style={{
           background: "#cc0000",
           padding: "0 12px",
-          display: "flex",
-          alignItems: "flex-end",
-          gap: 2,
         }}
       >
         <NavTab label="Browse" />
@@ -977,7 +973,7 @@ export default function HomePage() {
         <NavTab label="DVD Sale $5.99+" />
         <NavTab label="Watch Now" highlight />
 
-        <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 4, paddingBottom: 3 }}>
+        <div className="search-bar" style={{ paddingBottom: 3 }}>
           <input
             value={searchVal}
             onChange={(e) => setSearchVal(e.target.value)}
@@ -1012,11 +1008,10 @@ export default function HomePage() {
 
         {/* ── Secondary Nav ── */}
         <div
+          className="secondary-nav"
           style={{
             background: "#f0ebe0",
             borderBottom: "1px solid #ccc",
-            display: "flex",
-            alignItems: "center",
             padding: "0 2px",
           }}
         >
@@ -1057,7 +1052,7 @@ export default function HomePage() {
             >
               Watch Movies Instantly On Your PC
             </h1>
-            <div style={{ display: "flex", gap: 12, alignItems: "center", color: "#ccc", fontSize: 12 }}>
+            <div style={{ display: "flex", gap: 12, alignItems: "center", color: "#ccc", fontSize: 12 }} className="hero-features">
               <span style={{ fontWeight: "bold", color: "#fff" }}>Instant Viewing</span>
               <span>•</span>
               <span style={{ fontWeight: "bold", color: "#fff" }}>Full-length Movies and TV Series</span>
@@ -1068,7 +1063,7 @@ export default function HomePage() {
         </div>
 
         {/* ── Main Grid ── */}
-        <div style={{ display: "flex", gap: 0 }}>
+        <div className="main-grid">
 
           {/* ── Center Content ── */}
           <div style={{ flex: 1, padding: 8 }}>
@@ -1076,7 +1071,7 @@ export default function HomePage() {
             {/* Suggestions For You */}
             <div style={{ border: "1px solid #99aacc", background: "#eef2fa", marginBottom: 8 }}>
               <SectionHeader title="Suggestions For You" />
-              <div style={{ display: "flex", gap: 16, padding: "8px 12px 12px" }}>
+              <div style={{ display: "flex", gap: 16, padding: "8px 12px 12px" }} className="poster-row">
                 {suggestions.map((m) => (
                   <PosterCard
                     key={m.id}
@@ -1093,7 +1088,7 @@ export default function HomePage() {
             </div>
 
             {/* Recently Viewed + DVD Queue */}
-            <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
+            <div className="two-col-section">
 
               {/* Recently Viewed */}
               <div style={{ flex: 1, border: "1px solid #99aacc", background: "#eef2fa" }}>
@@ -1141,7 +1136,7 @@ export default function HomePage() {
               {/* From Your DVD Queue */}
               <div style={{ flex: 1, border: "1px solid #99aacc", background: "#eef2fa" }}>
                 <SectionHeader title="From Your DVD Queue" />
-                <div style={{ display: "flex", gap: 16, padding: "8px 12px 8px", justifyContent: "center" }}>
+                <div style={{ display: "flex", gap: 16, padding: "8px 12px 8px", justifyContent: "center" }} className="poster-row">
                   {dvdQueue.map((m) => (
                     <PosterCard
                       key={m.id}
@@ -1160,7 +1155,7 @@ export default function HomePage() {
 
             {/* Genre Tabs */}
             <div style={{ border: "1px solid #99aacc", background: "#eef2fa" }}>
-              <div style={{ display: "flex", borderBottom: "1px solid #99aacc", background: "#dce6f0" }}>
+              <div className="genre-tabs">
                 {genres.map((g) => (
                   <div
                     key={g}
@@ -1183,7 +1178,7 @@ export default function HomePage() {
                   </div>
                 ))}
               </div>
-              <div style={{ display: "flex", gap: 16, padding: "10px 14px 12px" }}>
+              <div style={{ display: "flex", gap: 16, padding: "10px 14px 12px" }} className="poster-row">
                 {byGenre[activeGenre].map((m) => (
                   <PosterCard
                     key={m.id}
@@ -1199,7 +1194,7 @@ export default function HomePage() {
           </div>
 
           {/* ── Sidebar ── */}
-          <div style={{ width: 180, borderLeft: "1px solid #ccc", flexShrink: 0 }}>
+          <div className="main-sidebar">
 
             {/* Video Quality Widget */}
             <div
@@ -1314,12 +1309,10 @@ export default function HomePage() {
 
         {/* ── Footer ── */}
         <div
+          className="footer-links"
           style={{
             background: "#cc0000",
             padding: "10px 16px",
-            display: "flex",
-            justifyContent: "center",
-            gap: 16,
           }}
         >
           {["Terms of Use", "Privacy Policy", "Help", "Contact Us"].map((l) => (

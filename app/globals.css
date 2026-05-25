@@ -24,3 +24,133 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* ── Responsive helpers ─────────────────────────────────────────── */
+
+/* Top bar: stack on mobile */
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.top-bar-links {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Primary nav: horizontal scroll on small screens */
+.primary-nav {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.primary-nav::-webkit-scrollbar { display: none; }
+
+/* Search bar: hide label text on mobile */
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+/* Hero features row: wrap on mobile */
+.hero-features {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  color: #ccc;
+  font-size: 12px;
+  flex-wrap: wrap;
+}
+
+/* Main grid: sidebar hidden on mobile */
+.main-grid {
+  display: flex;
+  gap: 0;
+}
+.main-sidebar {
+  width: 180px;
+  border-left: 1px solid #ccc;
+  flex-shrink: 0;
+}
+
+/* Poster rows: scroll horizontally */
+.poster-row {
+  display: flex;
+  gap: 16px;
+  padding: 8px 12px 12px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+/* Genre tabs: scroll horizontally */
+.genre-tabs {
+  display: flex;
+  border-bottom: 1px solid #99aacc;
+  background: #dce6f0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.genre-tabs::-webkit-scrollbar { display: none; }
+
+/* Recently viewed + DVD queue: stack on mobile */
+.two-col-section {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+/* Secondary nav: scroll on mobile */
+.secondary-nav {
+  display: flex;
+  align-items: center;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.secondary-nav::-webkit-scrollbar { display: none; }
+
+/* Footer links: wrap on mobile */
+.footer-links {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+/* ── Mobile breakpoint (max 640px) ──────────────────────────────── */
+@media (max-width: 640px) {
+  .main-sidebar {
+    display: none;
+  }
+
+  .two-col-section {
+    flex-direction: column;
+  }
+
+  .search-bar input {
+    width: 120px !important;
+  }
+
+  .hero-features span:not(:first-child):not(.dot) {
+    display: none;
+  }
+}
+
+/* ── Tablet breakpoint (max 900px) ──────────────────────────────── */
+@media (max-width: 900px) {
+  .main-sidebar {
+    display: none;
+  }
+}
