@@ -56,10 +56,41 @@ Aplica estas sentencias en la pestaña SQL de Supabase para crear las tablas mí
 
 ```sql
 -- Usuarios básicos
-create table if not exists users (
+-- Usuarios básicos
+create table if not exists usuarios (
    id uuid primary key default gen_random_uuid(),
-   email text unique,
-   role text default 'user'
+   correo text unique,
+   rol text default 'usuario'
+);
+
+-- Perfil extendido del usuario
+-- Historial de visualización
+create table if not exists historial_visualizacion (
+   id serial primary key,
+   usuario_id uuid not null references usuarios(id),
+   titulo_pelicula text not null,
+   fecha_visualizacion timestamptz default now(),
+   calificacion numeric(2,1),
+   notas text
+);
+
+-- Películas o series favoritas
+create table if not exists favoritos (
+   id serial primary key,
+   usuario_id uuid not null references usuarios(id),
+   titulo_pelicula text not null,
+   fecha_agregado timestamptz default now(),
+   unique(usuario_id, titulo_pelicula)
+);
+
+-- Preferencias del usuario
+-- Preferencias del usuario
+create table if not exists user_settings (
+   id uuid primary key references usuarios(id),
+   locale text default 'es',
+   email_notifications boolean default false,
+   dark_mode boolean default true,
+   updated_at timestamptz default now()
 );
 
 -- Rides (viajes)

@@ -1,7 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
+import { supabase } from "@/lib/supabase"
 
 // ── Types ──────────────────────────────────────────────────────────────────
 interface Movie {
@@ -91,11 +92,15 @@ function PosterCard({
   showRating = true,
   width = 100,
   height = 130,
+  onPlay,
+  onFavorite,
 }: {
   movie: Movie;
   showRating?: boolean;
   width?: number;
   height?: number;
+  onPlay?: (title: string) => void;
+  onFavorite?: (title: string) => void;
 }) {
   const [hovered, setHovered] = useState(false);
 
@@ -153,20 +158,41 @@ function PosterCard({
         </div>
       </div>
       {/* Play button */}
-      <div style={{ marginBottom: showRating ? 4 : 0 }}>
-        <button style={{
-          background: "linear-gradient(to bottom, #5a9fd4, #2a6496)",
-          border: "1px solid #1a4a7a",
-          borderRadius: 3,
-          color: "#fff",
-          fontSize: 11,
-          fontWeight: "bold",
-          padding: "2px 14px",
-          cursor: "pointer",
-          fontFamily: "Arial, sans-serif",
-        }}>
+      <div style={{ marginBottom: showRating ? 4 : 0, display: 'flex', justifyContent: 'center', gap: 6 }}>
+        <button
+          onClick={() => onPlay?.(movie.title)}
+          style={{
+            background: "linear-gradient(to bottom, #5a9fd4, #2a6496)",
+            border: "1px solid #1a4a7a",
+            borderRadius: 3,
+            color: "#fff",
+            fontSize: 11,
+            fontWeight: "bold",
+            padding: "2px 14px",
+            cursor: "pointer",
+            fontFamily: "Arial, sans-serif",
+          }}
+        >
           Play
         </button>
+        {onFavorite && (
+          <button
+            onClick={() => onFavorite(movie.title)}
+            style={{
+              background: "linear-gradient(to bottom, #cc0000, #990000)",
+              border: "1px solid #770000",
+              borderRadius: 3,
+              color: "#fff",
+              fontSize: 11,
+              fontWeight: "bold",
+              padding: "2px 14px",
+              cursor: "pointer",
+              fontFamily: "Arial, sans-serif",
+            }}
+          >
+            Favorito
+          </button>
+        )}
       </div>
       {showRating && <StarRating rating={movie.rating} size={14} />}
     </div>
@@ -306,8 +332,121 @@ function MoreLink({ label }: { label: string }) {
 // ── Main App ───────────────────────────────────────────────────────────────
 export default function HomePage() {
   const router = useRouter()
-  const [activeGenre, setActiveGenre] = useState<Genre>("Drama");
-  const [searchVal, setSearchVal] = useState("");
+  const [activeGenre, setActiveGenre] = useState<Genre>("Drama")
+  const [searchVal, setSearchVal] = useState("")
+  const [userId, setUserId] = useState<string | null>(null)
+  const [userEmail, setUserEmail] = useState<string | null>(null)
+  const [loadingUser, setLoadingUser] = useState(true)
+
+  // Asegura que exista la fila en `usuarios`; devuelve true si OK
+  const ensureUsuario = async (id: string, correo?: string) => {
+    const { data, error } = await supabase
+      .from('usuarios')
+      .upsert([{ id, correo: correo ?? userEmail }], { onConflict: 'id' })
+    if (error) {
+      console.error('Error upserting usuario:', {
+        message: error.message,
+        code: (error as any).code,
+        details: (error as any).details,
+        fullError: error
+      })
+      return false
+    }
+    console.log('Usuario upserted successfully:', data)
+    return true
+  }
+
+  useEffect(() => {
+    let isMounted = true
+
+    async function loadUser() {
+      const { data, error } = await supabase.auth.getSession()
+      if (error) {
+        console.warn('Error getting auth session:', error.message)
+      }
+
+      if (!isMounted) return
+
+      const sessionUser = data?.session?.user
+      if (!sessionUser?.email) {
+        router.push('/login')
+        return
+      }
+
+      if (!sessionUser.id) {
+        router.push('/login')
+        return
+      }
+
+      setUserEmail(sessionUser.email)
+      setUserId(sessionUser.id)
+      setLoadingUser(false)
+    }
+
+    loadUser()
+
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!session?.user?.email) {
+        router.push('/login')
+        return
+      }
+      setUserEmail(session.user.email)
+      setUserId(session.user.id)
+      setLoadingUser(false)
+    })
+
+    return () => {
+      isMounted = false
+      listener?.subscription?.unsubscribe()
+    }
+  }, [router])
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut()
+    router.push('/login')
+  }
+
+  const handleWatchMovie = async (title: string) => {
+    if (!userId) return
+    const ok = await ensureUsuario(userId, userEmail ?? undefined)
+    if (!ok) {
+      alert('No se pudo asegurar el usuario en la base de datos. Revisa la consola.')
+      return
+    }
+    const { error } = await supabase.from('historial_visualizacion').insert([
+      { usuario_id: userId, titulo_pelicula: title }
+    ])
+    if (error) {
+      console.warn('Error guardando historial:', error.message)
+      alert('No se pudo guardar el historial. Revisa la consola.')
+      return
+    }
+    alert(`Se agregó '${title}' a tu historial de visualización.`)
+  }
+
+  const handleAddFavorite = async (title: string) => {
+    if (!userId) return
+    const ok = await ensureUsuario(userId, userEmail ?? undefined)
+    if (!ok) {
+      alert('No se pudo asegurar el usuario en la base de datos. Revisa la consola.')
+      return
+    }
+    const { error } = await supabase.from('favoritos').insert([
+      { usuario_id: userId, titulo_pelicula: title }
+    ])
+    if (error) {
+      if ((error as any)?.code === '23505') {
+        alert('Esta película ya está en tus favoritos.')
+        return
+      }
+      console.warn('Error guardando favorito:', error.message)
+      alert('No se pudo guardar el favorito. Revisa la consola.')
+      return
+    }
+    alert(`'${title}' se agregó a tus favoritos.`)
+  }
+
+  const displayName = userEmail ? userEmail.split('@')[0] : 'Usuario'
 
   return (
     <div style={{
@@ -341,9 +480,13 @@ export default function HomePage() {
 
         {/* Top-right links */}
         <div style={{ display: "flex", gap: 8, alignItems: "center", color: "#fff", fontSize: 12 }}>
-          <span style={{ cursor: "pointer" }}>Calvin Koo ▼</span>
+          <span style={{ cursor: "default", opacity: 0.95 }}>
+            {loadingUser ? 'Cargando usuario...' : `Bienvenido, ${displayName}`}
+          </span>
           <span style={{ color: "#ffaaaa" }}>|</span>
-          <span onClick={() => router.push('/login')} style={{ cursor: "pointer", textDecoration: "underline" }}>Login</span>
+          <span onClick={handleLogout} style={{ cursor: "pointer", textDecoration: "underline" }}>
+            Cerrar sesión
+          </span>
           <span style={{ color: "#ffaaaa" }}>|</span>
           <span style={{ cursor: "pointer" }}>🎁</span>
           <span style={{ cursor: "pointer", textDecoration: "underline" }}>Buy / Redeem Gift</span>
@@ -473,7 +616,14 @@ export default function HomePage() {
                 justifyContent: "flex-start",
               }}>
                 {suggestions.map(m => (
-                  <PosterCard key={m.id} movie={m} width={110} height={140} />
+                  <PosterCard
+                    key={m.id}
+                    movie={m}
+                    width={110}
+                    height={140}
+                    onPlay={handleWatchMovie}
+                    onFavorite={handleAddFavorite}
+                  />
                 ))}
               </div>
               <MoreLink label="More Suggestions For You" />
@@ -536,7 +686,14 @@ export default function HomePage() {
                   justifyContent: "center",
                 }}>
                   {dvdQueue.map(m => (
-                    <PosterCard key={m.id} movie={m} width={100} height={120} />
+                    <PosterCard
+                      key={m.id}
+                      movie={m}
+                      width={100}
+                      height={120}
+                      onPlay={handleWatchMovie}
+                      onFavorite={handleAddFavorite}
+                    />
                   ))}
                 </div>
                 <MoreLink label="More From Your DVD Queue" />
@@ -580,7 +737,14 @@ export default function HomePage() {
                 padding: "10px 14px 12px",
               }}>
                 {byGenre[activeGenre].map(m => (
-                  <PosterCard key={m.id} movie={m} width={110} height={140} />
+                  <PosterCard
+                    key={m.id}
+                    movie={m}
+                    width={110}
+                    height={140}
+                    onPlay={handleWatchMovie}
+                    onFavorite={handleAddFavorite}
+                  />
                 ))}
               </div>
             </div>

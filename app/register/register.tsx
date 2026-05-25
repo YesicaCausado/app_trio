@@ -42,23 +42,36 @@ const primaryBtnStyle: React.CSSProperties = {
   letterSpacing: '0.04em',
 }
 
-function LoginPage() {
+function RegisterPage() {
   const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [loading, setLoading] = useState(false)
   const [focusedField, setFocusedField] = useState<string | null>(null)
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault()
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    setLoading(true)
+    const { data, error } = await supabase.auth.signUp({ email, password })
+    setLoading(false)
     if (error) {
       alert(error.message)
       return
     }
-    router.push('/home')
+    // Si la autenticación creó un usuario, inserta un perfil en la tabla `users`
+    const userId = (data as any)?.user?.id
+    if (userId) {
+      const { error: insertError } = await supabase.from('usuarios').insert([{ id: userId, correo: email }])
+      if (insertError) {
+        console.warn('No se pudo insertar usuario en la tabla usuarios:', insertError.message)
+      }
+    }
+
+    alert('Usuario registrado correctamente')
+    router.push('/login')
   }
 
-  const fieldBorder = (name: string) => ({
+  const fieldBorder = (name: string): React.CSSProperties => ({
     ...inputStyle,
     borderColor: focusedField === name ? RED : BORDER,
     boxShadow: focusedField === name ? `0 0 0 1px ${RED_DARK}` : 'none',
@@ -115,7 +128,7 @@ function LoginPage() {
               letterSpacing: '0.02em',
             }}
           >
-            Netflix — Iniciar sesión
+            Netflix — Crear cuenta
           </span>
         </div>
 
@@ -140,7 +153,7 @@ function LoginPage() {
           </p>
         </div>
 
-        <form onSubmit={handleLogin} style={{ padding: '16px 28px 24px' }}>
+        <form onSubmit={handleRegister} style={{ padding: '16px 28px 24px' }}>
           <div style={{ marginBottom: '12px' }}>
             <label
               style={{
@@ -161,6 +174,7 @@ function LoginPage() {
               onChange={(e) => setEmail(e.target.value)}
               onFocus={() => setFocusedField('email')}
               onBlur={() => setFocusedField(null)}
+              required
               style={fieldBorder('email')}
             />
           </div>
@@ -185,19 +199,22 @@ function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
               onFocus={() => setFocusedField('password')}
               onBlur={() => setFocusedField(null)}
+              required
               style={fieldBorder('password')}
             />
           </div>
 
-          <button type="submit" style={primaryBtnStyle}>
-            Ingresar
+          <button
+            type="submit"
+            disabled={loading}
+            style={{
+              ...primaryBtnStyle,
+              opacity: loading ? 0.6 : 1,
+              cursor: loading ? 'not-allowed' : 'pointer',
+            }}
+          >
+            {loading ? 'Cargando...' : 'Registrarse'}
           </button>
-
-          <div style={{ textAlign: 'right', marginTop: '10px' }}>
-            <span style={{ color: TEXT_MUTED, fontSize: '11px', cursor: 'pointer' }}>
-              ¿Olvidaste tu contraseña?
-            </span>
-          </div>
         </form>
 
         <div
@@ -210,9 +227,9 @@ function LoginPage() {
           }}
         >
           <span style={{ color: TEXT_MUTED, fontSize: '11px' }}>
-            ¿No tienes cuenta?{' '}
-            <Link href="/register" style={{ color: RED, textDecoration: 'none', fontWeight: 'bold' }}>
-              Crear cuenta
+            ¿Ya tienes cuenta?{' '}
+            <Link href="/login" style={{ color: RED, textDecoration: 'none', fontWeight: 'bold' }}>
+              Ir al login
             </Link>
           </span>
         </div>
@@ -221,4 +238,4 @@ function LoginPage() {
   )
 }
 
-export default LoginPage
+export default RegisterPage
