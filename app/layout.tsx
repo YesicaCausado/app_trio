@@ -15,6 +15,13 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Trio",
   description: "Tu plataforma de streaming favorita",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    title: "Trio",
+    statusBarStyle: "default",
+    startupImage: "/image.png",
+  },
   openGraph: {
     title: "Trio – Tu plataforma de streaming",
     description: "Descubre y disfruta tus películas favoritas en Trio.",
@@ -40,6 +47,11 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
+      <head>
+        <link rel="apple-touch-icon" href="/image.png" />
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#cc0000" />
+      </head>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );
