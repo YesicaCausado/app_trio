@@ -19,6 +19,19 @@ export const metadata: Metadata = {
     icon: "/image.png",
     apple: "/image.png",
   },
+  openGraph: {
+    title: "Trio – Tu plataforma de streaming",
+    description: "Descubre y disfruta tus películas favoritas en Trio.",
+    siteName: "Trio",
+    type: "website",
+    images: [{ url: "/opengraph-image.png", width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Trio – Tu plataforma de streaming",
+    description: "Descubre y disfruta tus películas favoritas en Trio.",
+    images: ["/opengraph-image.png"],
+  },
 };
 
 export default function RootLayout({
