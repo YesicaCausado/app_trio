@@ -942,19 +942,19 @@ export default function HomePage() {
           NETFLIX
         </div>
 
-        <div className="top-bar-links" style={{ color: "#fff", fontSize: 12 }}>
+        <div className="top-bar-links">
           <span style={{ cursor: "default", opacity: 0.95 }}>
-            {loadingUser ? "Cargando usuario..." : `Bienvenido, ${displayName}`}
+            {loadingUser ? "Cargando..." : `👤 ${displayName}`}
           </span>
           <span style={{ color: "#ffaaaa" }}>|</span>
           <span onClick={handleLogout} style={{ cursor: "pointer", textDecoration: "underline" }}>
             Cerrar sesión
           </span>
-          <span style={{ color: "#ffaaaa" }}>|</span>
-          <span style={{ cursor: "pointer" }}>🎁</span>
-          <span style={{ cursor: "pointer", textDecoration: "underline" }}>Buy / Redeem Gift</span>
-          <span style={{ color: "#ffaaaa" }}>|</span>
-          <span style={{ cursor: "pointer", textDecoration: "underline" }}>Help</span>
+          <span className="hide-mobile" style={{ color: "#ffaaaa" }}>|</span>
+          <span className="hide-mobile" style={{ cursor: "pointer" }}>🎁</span>
+          <span className="hide-mobile" style={{ cursor: "pointer", textDecoration: "underline" }}>Buy / Redeem Gift</span>
+          <span className="hide-mobile" style={{ color: "#ffaaaa" }}>|</span>
+          <span className="hide-mobile" style={{ cursor: "pointer", textDecoration: "underline" }}>Help</span>
         </div>
       </div>
 
@@ -1308,23 +1308,9 @@ export default function HomePage() {
         </div>
 
         {/* ── Footer ── */}
-        <div
-          className="footer-links"
-          style={{
-            background: "#cc0000",
-            padding: "10px 16px",
-          }}
-        >
+        <div className="footer-links">
           {["Terms of Use", "Privacy Policy", "Help", "Contact Us"].map((l) => (
-            <span
-              key={l}
-              style={{
-                color: "#ffcccc",
-                fontSize: 11,
-                cursor: "pointer",
-                textDecoration: "underline",
-              }}
-            >
+            <span key={l}>
               {l}
             </span>
           ))}
