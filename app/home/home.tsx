@@ -1310,7 +1310,7 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* ── Footer ── */}
+        {/* ── footer ── */}
         <div className="footer-links">
           {["Terms of Use", "Privacy Policy", "Help", "Contact Us"].map((l) => (
             <span key={l}>
