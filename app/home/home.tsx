@@ -943,7 +943,10 @@ export default function HomePage() {
         </div>
 
         <div className="top-bar-links">
-          <span style={{ cursor: "default", opacity: 0.95 }}>
+          <span
+            onClick={() => router.push('/profile')}
+            style={{ cursor: 'pointer', textDecoration: 'underline' }}
+          >
             {loadingUser ? "Cargando..." : `👤 ${displayName}`}
           </span>
           <span style={{ color: "#ffaaaa" }}>|</span>
