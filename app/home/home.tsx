@@ -100,7 +100,7 @@ function StarRating({ rating, size = 16 }: { rating: number; size?: number }) {
   return <span style={{ display: "inline-flex", gap: 1 }}>{stars}</span>;
 }
 
-// ── Poster Card ────────────────────────────────────────────────────────────
+// ── poster Card ────────────────────────────────────────────────────────────
 function PosterCard({
   movie,
   showRating = true,
